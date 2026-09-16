@@ -1,16 +1,32 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from pipeline.extraction import fetch_financial_api, save_raw_data
+from pipeline.transformation import transform_data, save_processed_data
+from pipeline.validation import validate_df
+from pipeline.load import load_data_to_postgres
+from logger import logger
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def run_pipeline():
+    logger.info("Iniciando a Pipeline de Dados Financeiros")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    #Extração
+    raw_json = fetch_financial_api()
+    raw_file_path = save_raw_data(raw_json)
+
+    #Transformação
+    df_transformed = transform_data(raw_file_path)
+
+    #Validação
+    if not validate_df(df_transformed):
+        logger.error("Pipeline interrompida: Os dados não passaram no teste de validação!")
+        raise ValueError("Dados inválidos. O processo foi abortado.")
+
+    #Salvamento Dados Tratados
+    processed_file_path = save_processed_data(df_transformed)
+
+    #Envia DataFrame direto para o PostgreSQL no Docker 👈
+    load_data_to_postgres(df_transformed, table_name="cotacoes_moedas")
+    logger.info(f"Pipeline finalizada com sucesso! Arquivo gerado: {processed_file_path}")
+
+
+if __name__ == "__main__":
+    run_pipeline()

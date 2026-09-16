@@ -19,6 +19,10 @@ def get_latest_raw_data(output_dir : str = "data/raw") -> Path:
     return latest_raw_data
 
 def transform_data(file_path : Path) -> pd.DataFrame:
+    """
+
+    :rtype: pd.DataFrame
+    """
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     df = pd.DataFrame(data.values())
@@ -34,6 +38,7 @@ def transform_data(file_path : Path) -> pd.DataFrame:
             "create_date": "data_cotacao",
         }
     )
+    df["data_cotacao"] = pd.to_datetime(df["data_cotacao"], errors="raise")
     colunas_numericas = ["maxima", "minima", "compra", "venda"]
     for coluna in colunas_numericas:
         df[coluna] = df[coluna].astype(float)
