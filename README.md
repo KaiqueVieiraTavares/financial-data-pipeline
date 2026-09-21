@@ -25,7 +25,7 @@ O pipeline segue o padrão ETL (Extract, Transform, Load):
 - **Boas Práticas**: Logging centralizado, testes automatizados (Pytest), variáveis de ambiente (.env)
 
 ## Estrutura do Repositório
-
+```
 financial-data-pipeline/
 │
 ├── src/
@@ -57,7 +57,7 @@ financial-data-pipeline/
 ├── requirements.txt # Dependências do projeto Python
 ├── .gitignore # Arquivos ignorados pelo Git (ex: .env, pycache, venv)
 └── README.md
-
+```
 
 ## Como Executar o Projeto
 
